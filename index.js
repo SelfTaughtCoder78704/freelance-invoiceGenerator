@@ -1,3 +1,4 @@
+require("dotenv").config();
 const {
   Invoice,
   generatInvoiceNumber,
@@ -10,14 +11,14 @@ const {
 const nodemailer = require("nodemailer");
 
 // create reusable transporter object using the default SMTP transport
-// let transporter = nodemailer.createTransport({
-//   host: "smtp.gmail.com",
-//   port: 587,
-//   auth: {
-//     user: "bobbynicholson78704@gmail.com",
-//     pass: "abahhntalgekyztp",
-//   },
-// });
+let transporter = nodemailer.createTransport({
+  host: "smtp.gmail.com",
+  port: 587,
+  auth: {
+    user: "bobbynicholson78704@gmail.com",
+    pass: process.env.PASSWORD,
+  },
+});
 
 // get command line arguments
 const [, , ...args] = process.argv;
@@ -65,63 +66,63 @@ invoice.deleteServiceProduct("Product1");
 invoice.updateDueDate(increaseDate(new Date(), 3));
 console.log(invoice);
 
-// transporter.verify((error, success) => {
-//   if (error) {
-//     console.log(error);
-//   } else {
-//     console.log("Server is ready to take our messages");
-//   }
-// });
+transporter.verify((error, success) => {
+  if (error) {
+    console.log(error);
+  } else {
+    console.log("Server is ready to take our messages");
+  }
+});
 
-// const HTMLTemplate = `
-// <!DOCTYPE html>
-// <html lang="en">
-// <head>
-//     <meta charset="UTF-8">
-//     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-// </head>
-// <style>
-//  p {
-//    line-height: 0.33;
-//  }
-// </style>
-// <body>
-//  <div>
-//   <h1>${invoice.bizName} Invoice:</h1>
-//   <p>${invoice.bizAddress}</p>
-//   <p>${invoice.bizEmail}</p>
-//   <p>${invoice.bizWebsite}</p>
-//   <p>Customer Name: ${invoice.customerName}</p>
-//   <p>Customer Email: ${invoice.customerEmail}</p>
-//  </div>
-//   <div>${invoice.productsOrServices.map(
-//     (product) => `
-//     <h2>Product/Service Name:${product.name}</h2>
-//     <p>Price: ${product.price}</p>
-//     <p>Quantity: ${product.quantity}</p>
-//     <h3>Line Total: $${product.lineTotal}</h3>
-//   `
-//   )}</div>
-//   <div>
-//     <p>Subtotal: $${invoice.subTotal}</p>
-//   </div>
-//   <div>${invoice.discounts.map(
-//     (discount) => `
-//     <p>Discount Name:<b>${discount.name}</b></p>
-//     <h3>Discount: $${discount.discount}</h3>
-//   `
-//   )}</div>
-//   <div>
-//     <p>Total: $${invoice.invoiceTotal}</p>
-//     <h3>Total With Tax: $${invoice.invoiceTotalWithTax}</h3>
-//   </div>
-// </body>
-// </html>
-// `;
+const HTMLTemplate = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<style>
+ p {
+   line-height: 0.33;
+ }
+</style>
+<body>
+ <div>
+  <h1>${invoice.bizName} Invoice:</h1>
+  <p>${invoice.bizAddress}</p>
+  <p>${invoice.bizEmail}</p>
+  <p>${invoice.bizWebsite}</p>
+  <p>Customer Name: ${invoice.customerName}</p>
+  <p>Customer Email: ${invoice.customerEmail}</p>
+ </div>
+  <div>${invoice.productsOrServices.map(
+    (product) => `
+    <h2>Product/Service Name:${product.name}</h2>
+    <p>Price: ${product.price}</p>
+    <p>Quantity: ${product.quantity}</p>
+    <h3>Line Total: $${product.lineTotal}</h3>
+  `
+  )}</div>
+  <div>
+    <p>Subtotal: $${invoice.subTotal}</p>
+  </div>
+  <div>${invoice.discounts.map(
+    (discount) => `
+    <p>Discount Name:<b>${discount.name}</b></p>
+    <h3>Discount: $${discount.discount}</h3>
+  `
+  )}</div>
+  <div>
+    <p>Total: $${invoice.invoiceTotal}</p>
+    <h3>Total With Tax: $${invoice.invoiceTotalWithTax}</h3>
+  </div>
+</body>
+</html>
+`;
 
-// transporter.sendMail({
-//   from: "bobbynicholson78704@gmail.com", // sender address
-//   to: "bobbynicholson78704@gmail.com", // list of receivers
-//   subject: "Invoice Ready ✔", // Subject line
-//   html: HTMLTemplate, // html body
-// });
+transporter.sendMail({
+  from: "bobbynicholson78704@gmail.com", // sender address
+  to: "bobbynicholson78704@gmail.com", // list of receivers
+  subject: "Invoice Ready ✔", // Subject line
+  html: HTMLTemplate, // html body
+});
